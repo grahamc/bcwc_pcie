@@ -52,7 +52,7 @@ static int fthd_buffer_queue_setup(
     unsigned int *nbuffers,
     unsigned int *nplanes,
     unsigned int sizes[],
-    void *alloc_ctxs[]
+    struct device *alloc_devs[]
 ) {
 
 	struct fthd_private *dev_priv = vb2_get_drv_priv(vq);
@@ -70,7 +70,7 @@ static int fthd_buffer_queue_setup(
 	/* FIXME: We assume single plane format here but not below */
 	for (i = 0; i < *nplanes; i++) {
 		sizes[i] = cur_fmt->sizeimage;
-		alloc_ctxs[i] = dev_priv->alloc_ctx;
+		alloc_devs[i] = dev_priv->alloc_devs;
 		total_size += sizes[i];
 	}
 
@@ -711,7 +711,7 @@ int fthd_v4l2_register(struct fthd_private *dev_priv)
 		v4l2_ctrl_handler_free(&dev_priv->v4l2_ctrl_handler);
 		goto fail;
 	}
-	dev_priv->alloc_ctx = vb2_dma_sg_init_ctx(&dev_priv->pdev->dev);
+	dev_priv->alloc_devs = vb2_dma_sg_init_ctx(&dev_priv->pdev->dev);
 	vdev->v4l2_dev = v4l2_dev;
 	strcpy(vdev->name, "Apple Facetime HD"); // XXX: Length?
 	vdev->vfl_dir = VFL_DIR_RX;
@@ -746,7 +746,7 @@ void fthd_v4l2_unregister(struct fthd_private *dev_priv)
 {
 
 	v4l2_ctrl_handler_free(&dev_priv->v4l2_ctrl_handler);
-	vb2_dma_sg_cleanup_ctx(dev_priv->alloc_ctx);
+	vb2_dma_sg_cleanup_ctx(dev_priv->alloc_devs);
 	video_unregister_device(dev_priv->videodev);
 	v4l2_device_unregister(&dev_priv->v4l2_dev);
 }

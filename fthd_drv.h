@@ -118,7 +118,7 @@ struct fthd_private {
 	struct vb2_queue vb2_queue;
 	struct mutex vb2_queue_lock;
 	struct list_head buffer_queue;
-	struct vb2_alloc_ctx *alloc_ctx;
+	struct vb2_alloc_devs *alloc_devs;
 	struct h2t_buf_ctx h2t_bufs[FTHD_BUFFERS];
 
 	struct v4l2_ctrl_handler v4l2_ctrl_handler;
